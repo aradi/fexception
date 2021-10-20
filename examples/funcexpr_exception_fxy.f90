@@ -1,4 +1,4 @@
-module function_exception_fxy
+module funcexpr_exception_fxy
   use user_exceptions_fxy, only : fatal_error, io_error, linalg_error
   implicit none
 
@@ -40,39 +40,62 @@ contains
     integer, intent(in) :: ierror
     integer :: res
 
-    try res = function_throwing_error(ierror)
+    try res = function_throwing_error1(ierror)&
+        & + function_throwing_error2(ierror)
 
   end function function_propagating_error
 
 
-  function function_throwing_error(ierror) result(res) throws(io_error, linalg_error, fatal_error)
+  function function_throwing_error1(ierror) result(res) throws(io_error, linalg_error, fatal_error)
     integer, intent(in) :: ierror
     integer :: res
 
     select case (ierror)
     case (1)
-      print "(a)", "function_throwing_error: throwing io_error"
+      print "(a)", "function_throwing_error1: throwing io_error"
       throw io_error(message="I/O error happened", filename="test.dat", unit=12)
     case (2)
-      print "(a)", "function_throwing_error: throwing linalg_error"
+      print "(a)", "function_throwing_error1: throwing linalg_error"
       throw linalg_error(message="Linalg error happened", info=4)
     case (3)
-      print "(a)", "function_throwing_error: throwing fatal_error"
+      print "(a)", "function_throwing_error1: throwing fatal_error"
       throw fatal_error(message="Fatal error without further details happened")
     end select
 
-    print "(a)", "function_throwing_error: returning without any error"
+    print "(a)", "function_throwing_error1: returning without any error"
     res = 42
 
-  end function function_throwing_error
-
-end module function_exception_fxy
+  end function function_throwing_error1
 
 
-program program_function_exception_fxy
-  use function_exception_fxy
+function function_throwing_error2(ierror) result(res) throws(io_error, linalg_error, fatal_error)
+  integer, intent(in) :: ierror
+  integer :: res
+
+  select case (ierror)
+  case (2)
+    print "(a)", "function_throwing_error2: throwing io_error"
+    throw io_error(message="I/O error happened", filename="test.dat", unit=12)
+  case (3)
+    print "(a)", "function_throwing_error2: throwing linalg_error"
+    throw linalg_error(message="Linalg error happened", info=4)
+  case (0)
+    print "(a)", "function_throwing_error2: throwing fatal_error"
+    throw fatal_error(message="Fatal error without further details happened")
+  end select
+
+  print "(a)", "function_throwing_error2: returning without any error"
+  res = -142
+
+end function function_throwing_error2
+
+end module funcexpr_exception_fxy
+
+
+program program_funcexpr_exception_fxy
+  use funcexpr_exception_fxy
   implicit none
 
   call main()
 
-end program program_function_exception_fxy
+end program program_funcexpr_exception_fxy

@@ -5,6 +5,7 @@ set(examples
     function_exception
     catch_exception
     catch_exception_class
+    funcexpr_exception
     propagate_exception
     partially_propagate_exception
     rethrow_exception)
